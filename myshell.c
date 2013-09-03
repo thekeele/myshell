@@ -4,7 +4,7 @@
 #include <stdlib.h>   //Standard Library
 #include <sys/wait.h> //Wait for Process
 
-#define MAX 1024      //Because 1MB is cool
+#define MAX 1024      //input buffer size
 
 /*	Execute		*/
 /* Attempt to create a new process
