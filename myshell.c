@@ -37,11 +37,7 @@ void execute(char *line)
 			//while(wait(&status) != pid);
 			//while(wait(NULL) > 0);
 			waitpid(pid, &status, 0);
-
 			//wait4( no hang option )
-
-			//wait(NULL);
-			//wait(&status);
 			//exit(0);
 	}
 }
@@ -50,10 +46,18 @@ void execute(char *line)
 /* Displays the shell prompt and
  * gathers a line of input from
  * stdin.	*/
-void prompt(char *line)
+void prompt(char *line, char *option)
 {
-	printf("myshell: ");	
-	fgets(line, MAX, stdin);	
+	if (option == NULL)
+	{
+		printf("myshell: ");	
+	}
+	else
+	{
+		printf("%s ", option);	
+	}	
+
+	fgets(line, MAX, stdin);
 }
 
 /*	Parse	*/
@@ -76,18 +80,25 @@ void parse(char *line)
  *   "./myshell" 
  * - Shell prompt, "myshell:"
  * - Type stuff, It should be cool	*/
-int main()
+int main(int argc, char *argv[])
 {
 	char line[MAX];	//shell input line
+	char *option = NULL;
+	int index = 0;
+	
+	if (argc > 1)
+	{
+		option = argv[argc-1];
+	}
 
 	system("clear");
-	prompt(line);
+	prompt(line, option);
 	parse(line);
 
 	while (strcmp(line, "exit") != 0)
 	{	
 		execute(line);
-		prompt(line);	
+		prompt(line, option);	
 		parse(line);	
 	}
 
