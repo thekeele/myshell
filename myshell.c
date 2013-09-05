@@ -19,26 +19,30 @@ void execute(char *line)
 	pid_t pid;	
 	int status;
 
+	printf("Entering Execute Function\n");
+	sleep(2);	
+
 	switch(pid = fork())
 	{
 		case -1: 
-			fprintf(stderr, "Can't Fork It\n");
-			//add perror(), gives actual reason for failure
+			perror("Can't Fork It\n\n");
 			exit(-1);
-		case 0: 
-			//execvp, use this one
-			//exece, parent command?
-			if (execlp(line, line, NULL) < 0)
-			{
-				printf("Can't excute Command\n");
-				exit(-1);
-			}
+		case 0:
+			printf("Child PID: %d\n", (int)pid);
+			sleep(2);
+
+			//execvp(line, &line); //randomly doesn't work wtf?!
+			execlp(line, line, NULL); //exits case with success execute
+			printf("Can't excute Command\n");
+			exit(-1);
 		default:
-			//while(wait(&status) != pid);
-			//while(wait(NULL) > 0);
-			waitpid(pid, &status, 0);
+			printf("Parent PID: %d\n", (int)pid);
+			while(waitpid(pid, &status, WNOHANG) >= 0) //this should be exactly what we need
+			{
+			; //call out exit status
+			}
 			//wait4( no hang option )
-			//exit(0);
+			//exit(0);  //no needed?
 	}
 }
 
@@ -48,6 +52,9 @@ void execute(char *line)
  * stdin.	*/
 void prompt(char *line, char *option)
 {
+	printf("Entering Prompt Function\n\n");
+	sleep(2);
+
 	if (option == NULL)
 	{
 		printf("myshell: ");	
@@ -56,7 +63,7 @@ void prompt(char *line, char *option)
 	{
 		printf("%s ", option);	
 	}	
-
+	
 	fgets(line, MAX, stdin);
 }
 
@@ -66,7 +73,10 @@ void prompt(char *line, char *option)
  * fgets we need to remove the
  * newline character.	*/
 void parse(char *line)
-{
+{	
+	printf("Entering Parse Function\n\n");
+	sleep(2);
+	
 	if (line[strlen(line)-1] == '\n')
 	{	
 		line[strlen(line)-1] = '\0';
@@ -83,9 +93,9 @@ void parse(char *line)
 int main(int argc, char *argv[])
 {
 	char line[MAX];	//shell input line
-	char *option = NULL;
-	int index = 0;
-	
+	char *option = NULL;  //optional prompt name
+
+	//if arguments were supplied use the last one	
 	if (argc > 1)
 	{
 		option = argv[argc-1];
