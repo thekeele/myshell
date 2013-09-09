@@ -1,10 +1,22 @@
 #include <stdio.h>    //Standard Input/Output
+#include <signal.h>   //Signal Handler
 #include <string.h>   //String Functions
 #include <unistd.h>   //Process Manipulation
 #include <stdlib.h>   //Standard Library
 #include <sys/wait.h> //Wait for Process
 
 #define MAX 1024      //input buffer size
+
+/*	Signal Handler	*/
+void signal_handler(int signal)
+{ 
+	//if(signal == SIGQUIT)
+	//{
+		//(void)signal; 
+		//printf("You pressed %d\n", signal); 
+		exit(0); 
+	//}
+}
 
 /*	Execute		*/
 /* Attempt to create a new process
@@ -101,15 +113,14 @@ int main(int argc, char *argv[])
 		option = argv[argc-1];
 	}
 
-	system("clear");
-	prompt(line, option);
-	parse(line);
+	system("clear");	//clear screen
 
 	while (strcmp(line, "exit") != 0)
-	{	
-		execute(line);
-		prompt(line, option);	
+	{
+		signal(SIGINT, signal_handler);	
+		prompt(line, option);
 		parse(line);	
+		execute(line);
 	}
 
 	return 0;
