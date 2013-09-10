@@ -7,6 +7,17 @@
 
 #define MAX 1024      //input buffer size
 
+/*	Helper	*/
+/* This function is invoked if the user
+ * supplies an invalid prompt	*/
+int help(char *argv[]) 
+{
+	printf("Specifying a different prompt name is optional:\n");
+	printf("Usage: %s [newprompt]\n", argv[0]);
+    	printf("Keep it under 20 chars\n");
+    	return EXIT_FAILURE;
+}
+
 /*	Signal Handler	*/
 void signal_handler(int signal)
 { 
@@ -27,8 +38,8 @@ void execute(char *line)
 	pid_t pid;	
 	int status;
 
-	printf("Entering Execute Function\n");
-	sleep(1);	
+	//printf("Entering Execute Function\n");
+	//sleep(1);	
 
 	switch(pid = fork())
 	{
@@ -36,14 +47,14 @@ void execute(char *line)
 			perror("Can't Fork It\n\n");
 			exit(-1);
 		case 0:
-			printf("Child PID: %d\n", (int)pid);
+			//printf("Child PID: %d\n", (int)pid);
 
 			//execvp(line, &line); //randomly doesn't work wtf?!
 			execlp(line, line, NULL); //exits case with success execute
 			printf("Can't excute Command\n");
 			exit(-1);
 		default:
-			printf("Parent PID: %d\n", (int)pid);
+			//printf("Parent PID: %d\n", (int)pid);
 			while(waitpid(pid, &status, WNOHANG) >= 0) //this should be exactly what we need
 			{
 			; //call out exit status
@@ -59,6 +70,9 @@ void execute(char *line)
  * stdin.	*/
 void prompt(char *line, char *option)
 {
+	//printf("Entering Prompt Function\n\n");
+	//sleep(1);
+
 	if (option == NULL)
 	{
 		printf("myshell: ");	
@@ -78,9 +92,10 @@ void prompt(char *line, char *option)
  * newline character.	*/
 void parse(char *line)
 {	
-	printf("Entering Parse Function\n\n");
-	sleep(1);
-	
+	//printf("Entering Parse Function\n\n");
+	//sleep(1);
+
+	//replace newline character with null character	
 	if (line[strlen(line)-1] == '\n')
 	{	
 		line[strlen(line)-1] = '\0';
@@ -99,20 +114,29 @@ int main(int argc, char *argv[])
 	char line[MAX];	//shell input line
 	char *option = NULL;  //optional prompt name
 
+	// Too many arguments, string too long, check for only alphas? 
+	if (argc > 2 || strlen(argv[argc-1]) > 20 ) 
+	{
+		int fail = help(argv);
+		exit(fail);
+	}
+
 	//if arguments were supplied use the last one	
-	if (argc > 1)
+	if (argc == 2)
 	{
 		option = argv[argc-1];
 	}
 
 	system("clear");	//clear screen
-
+	prompt(line, option);
+	parse(line);
+	
 	while (!feof(stdin) && strcmp(line, "exit") != 0)
 	{
 		signal(SIGINT, signal_handler);	
+		execute(line);	
 		prompt(line, option);
 		parse(line);	
-		execute(line);
 	}
 
 	return 0;
