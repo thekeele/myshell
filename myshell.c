@@ -10,12 +10,8 @@
 /*	Signal Handler	*/
 void signal_handler(int signal)
 { 
-	//if(signal == SIGQUIT)
-	//{
-		//(void)signal; 
-		//printf("You pressed %d\n", signal); 
-		exit(0); 
-	//}
+	printf("Caught Signal: %d\n", signal); 
+	exit(signal); 
 }
 
 /*	Execute		*/
@@ -32,7 +28,7 @@ void execute(char *line)
 	int status;
 
 	printf("Entering Execute Function\n");
-	sleep(2);	
+	sleep(1);	
 
 	switch(pid = fork())
 	{
@@ -41,7 +37,6 @@ void execute(char *line)
 			exit(-1);
 		case 0:
 			printf("Child PID: %d\n", (int)pid);
-			sleep(2);
 
 			//execvp(line, &line); //randomly doesn't work wtf?!
 			execlp(line, line, NULL); //exits case with success execute
@@ -64,9 +59,6 @@ void execute(char *line)
  * stdin.	*/
 void prompt(char *line, char *option)
 {
-	printf("Entering Prompt Function\n\n");
-	sleep(2);
-
 	if (option == NULL)
 	{
 		printf("myshell: ");	
@@ -87,7 +79,7 @@ void prompt(char *line, char *option)
 void parse(char *line)
 {	
 	printf("Entering Parse Function\n\n");
-	sleep(2);
+	sleep(1);
 	
 	if (line[strlen(line)-1] == '\n')
 	{	
@@ -115,7 +107,7 @@ int main(int argc, char *argv[])
 
 	system("clear");	//clear screen
 
-	while (strcmp(line, "exit") != 0)
+	while (!feof(stdin) && strcmp(line, "exit") != 0)
 	{
 		signal(SIGINT, signal_handler);	
 		prompt(line, option);
