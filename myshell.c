@@ -94,12 +94,36 @@ void parse(char *line)
 {	
 	//printf("Entering Parse Function\n\n");
 	//sleep(1);
+	const char delims[] = {' ','-','<','>','&',';','|'};
+	const char *tokens[MAX]; //use len(line)
+	char *token;
+	int index = 0;
 
 	//replace newline character with null character	
 	if (line[strlen(line)-1] == '\n')
 	{	
 		line[strlen(line)-1] = '\0';
 	}
+	
+	printf("Raw line: %s\n", line);
+
+	//Get the first token
+	token = strtok(line, delims);
+
+	while (token != NULL)
+	{	
+		tokens[index] = token;  //store individual token
+		index++;	
+		printf("Token: %s\n", token);
+		token = strtok(NULL, delims);
+	}
+
+	printf("Tokens:");
+	for(int i=0; i<index; i++)
+	{
+		printf(" %s ", tokens[i]);
+	}
+	printf("\n");
 }
 
 /*	Simple Shell	*/
